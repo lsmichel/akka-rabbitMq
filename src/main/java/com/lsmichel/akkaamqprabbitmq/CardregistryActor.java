@@ -68,6 +68,7 @@ public class CardregistryActor extends AbstractActor {
           System.out.println("=========> "+ curretcards.keySet().size());
           System.out.println("========> "+ curretcards.keySet().size());
          for (ActorRef each : getContext().getChildren()) {
+             
               getContext().unwatch(each);
               getContext().stop(each);
          }
@@ -89,6 +90,8 @@ public class CardregistryActor extends AbstractActor {
            
             return receiveBuilder()   
             .match(ICardMessages.CardCreate.class, (ICardMessages.CardCreate cardInfo) -> {
+                
+                System.out.println("beginning =========================================");
                  ActorSystem system = ActorSystem.create();
                  Materializer materializer = ActorMaterializer.create(system);
                  ActorRef sender =  getSender();
@@ -327,28 +330,7 @@ public class CardregistryActor extends AbstractActor {
         }
         
      }
-     private static String SetCardDataInQuery(Card card){
-        String insertData = "INSERT INTO card_tbl VALUES (";
-        insertData+=card.cardid +" , '";
-        insertData+=card.getCardUserFname() +"' , '";
-        insertData+=card.getCardUserLname() +"' , '";
-        insertData+=card.getCardDateEtabishment() +"' , '";
-        insertData+=card.getCardDateEpiration() +"' , '";
-        insertData+=card.getCardLocationEtabishment() +"' , '";
-        insertData+=card.getCardImatriculation() +"' , '";
-        insertData+=card.getCardNumber() +"' , '";
-        insertData+=card.getCardUserSex() +"' , '";
-        insertData+=card.getCardUserPhoto() +"' , '";
-        insertData+=card.getCardUserAdress() +"' , '";
-        insertData+=card.getCardUserPofession() +"' , '";
-        insertData+=card.getCardUserFatherName() +"' , '";
-        insertData+=card.getCardUserFatherBirthDate() +"' , '";
-        insertData+=card.getCardUserMatherName() +"' , '";
-        insertData+=card.getCardUserMatherBirthDate() +"' , '";
-        insertData+=card.getCardNocaisse()+"'" ;
-        insertData+= ")";
-        return insertData; 
-     }
+    
      private int GetCurrentPosQueNum(String pos){
          if(!currentMapCount.containsKey("clientID_"+pos))
            return 0;  
@@ -380,7 +362,7 @@ public class CardregistryActor extends AbstractActor {
         }
     }
     private Map<String, Object> generateCardMap(Card card) {
-        if (card!=null && card.getCardNocaisse() != null && card.getCardNocaisse().isEmpty()) {
+        if (card!=null && card.getCardNocaisse() != null && ! card.getCardNocaisse().isEmpty()) {
             Map<String, Object> icardIn = new HashMap<>();
             if (card.getCardUserFname() != null && !card.getCardUserFname().isEmpty()) {
                 icardIn.put("cardUserFname", card.getCardUserFname());
@@ -444,13 +426,16 @@ public class CardregistryActor extends AbstractActor {
         if (cardInfo != null) {
             Card card = cardInfo.getCard();
             Map<String, Object> icardIn = generateCardMap(card);
+            
             if (icardIn != null && !icardIn.keySet().isEmpty()) {
                 ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
                 ObjectOutputStream out = null;
                 byte[] bytes = MapToByteArray(icardIn);
+                
                 if (bytes != null) {
                     List<byte[]> input = Arrays.asList(bytes);
                     try {
+                        
                         final QueueDeclaration queueDeclaration = QueueDeclaration.create("clientID_" + card.getCardNocaisse());
                         final String queueName = "clientID_" + card.getCardNocaisse();
                         AmqpCredentials amqpCredentials = AmqpCredentials.create("root", "root");
@@ -525,9 +510,9 @@ public class CardregistryActor extends AbstractActor {
                             input.add(bytes);
                         }
                     });
-
+                      System.out.println("beginning =========================================");
                      if(!input.isEmpty()){
-                   
+                      
                           try {
                             final QueueDeclaration queueDeclaration = QueueDeclaration.create("clientID_"+cardsInfo.getCards().get(0).getCardNocaisse());
                             final String queueName = "clientID_"+cardsInfo.getCards().get(0).getCardNocaisse();
@@ -570,7 +555,7 @@ public class CardregistryActor extends AbstractActor {
              AmqpCredentials amqpCredentials = AmqpCredentials.create("root", "root");
              AmqpDetailsConnectionProvider connectionProvider =
                      AmqpDetailsConnectionProvider.create("localhost", 5672)
-                             .withHostAndPort("localhostd", 5672)
+                             .withHostAndPort("localhost", 5672)
                              .withVirtualHost("vhost")
                              .withCredentials(amqpCredentials);
             

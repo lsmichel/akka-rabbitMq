@@ -25,8 +25,8 @@ import akka.stream.javadsl.Flow;
 public class CardManagerRunner extends AllDirectives{
     private final CardRoutes cardRoutes;
 
-    public CardManagerRunner(ActorSystem system, ActorRef cardRegistryActor) {
-        cardRoutes = new CardRoutes(system, cardRegistryActor);
+    public CardManagerRunner(ActorSystem system, ActorRef cardRegistryActor ,  ActorRef cardPersistanceActor) {
+        cardRoutes = new CardRoutes(system, cardRegistryActor, cardPersistanceActor);
     }
    
     
@@ -41,10 +41,11 @@ public class CardManagerRunner extends AllDirectives{
         ActorRef supervisorActor = system.actorOf(SupervisorActor.props(), "supervisorActor");
         
         ActorRef cardRegistryActor = system.actorOf(CardregistryActor.props(), "cardRegistryActor");
+        ActorRef cardPersistanceActor = system.actorOf(PersistanceActor.props(), "cardPersistanceActor");
         
         supervisorActor.tell(cardRegistryActor, noSender());
         
-        CardManagerRunner app = new CardManagerRunner(system, cardRegistryActor);
+        CardManagerRunner app = new CardManagerRunner(system, cardRegistryActor, cardPersistanceActor);
 
         final Flow<HttpRequest, HttpResponse, NotUsed> routeFlow = app.createRoute().flow(system, materializer);
         http.bindAndHandle(routeFlow, ConnectHttp.toHost(ip, 8080), materializer);

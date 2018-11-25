@@ -112,5 +112,41 @@ public interface ICardMessages {
         
         
     }
+    
+        class CardPersistActionPerformet implements Serializable{
+        private final String message ;
+        private final String numcard;
+        private final Boolean hasError;
+        private final String errorMessage;
+
+        public CardPersistActionPerformet( String message, String numcard, Boolean hasError, String errorMessage) {
+            this.message = message;
+            this.numcard = numcard;
+            this.hasError = hasError;
+            this.errorMessage = errorMessage;
+        }
+
+       
+
+        public String getMessage() {
+            return message;
+        }
+
+        public String getNumcard() {
+            return numcard;
+        }
+
+        public Boolean getHasError() {
+            return hasError;
+        }
+
+       
+
+        public String getErrorMessage() {
+            return errorMessage;
+        }
+        
+        
+    }
 
 }

@@ -31,6 +31,11 @@
             <artifactId>akka-http-jackson_2.12</artifactId>
             <version>10.1.4</version>
         </dependency>
+        <dependency>
+          <groupId>com.lightbend.akka</groupId>
+          <artifactId>akka-stream-alpakka-slick_2.12</artifactId>
+          <version>1.0-M1</version>
+        </dependency>   
     </dependencies>
     <build>
         <plugins>

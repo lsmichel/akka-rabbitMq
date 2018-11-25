@@ -28,6 +28,7 @@ import com.lsmichel.akkaamqprabbitmq.ICardMessages.CardCreateActionPerformet;
 import com.lsmichel.akkaamqprabbitmq.CardregistryActor.Card;
 import com.lsmichel.akkaamqprabbitmq.ICardMessages.CardCreate;
 import com.lsmichel.akkaamqprabbitmq.CardregistryActor.PosCard;
+import com.lsmichel.akkaamqprabbitmq.ICardMessages.CardPersistActionPerformet;
 import com.lsmichel.akkaamqprabbitmq.ICardMessages.CardsPush;
 import com.lsmichel.akkaamqprabbitmq.ICardMessages.InfoCard;
 import com.lsmichel.akkaamqprabbitmq.ICardMessages.PersistCreate;
@@ -39,11 +40,13 @@ import com.lsmichel.akkaamqprabbitmq.ICardMessages.PersistCreate;
  */
 public class CardRoutes extends AllDirectives{
     final private ActorRef cardRegistryActor;
+    final private ActorRef cardPersistanceActor;
     final private LoggingAdapter log;
     Timeout timeout = new Timeout(Duration.create(200000, TimeUnit.SECONDS));
             
-    public CardRoutes(ActorSystem system, ActorRef cardRegistryActor) {
+    public CardRoutes(ActorSystem system, ActorRef cardRegistryActor ,ActorRef cardPersistanceActor ) {
         this.cardRegistryActor = cardRegistryActor;
+        this.cardPersistanceActor=cardPersistanceActor;
         log = Logging.getLogger(system, this);
     }
     public Route routes() {
@@ -178,12 +181,12 @@ public class CardRoutes extends AllDirectives{
                     entity(
                         Jackson.unmarshaller(Card.class),
                         card -> {
-                            CompletionStage<CardCreateActionPerformet> cardCreated = PatternsCS
-                                .ask(cardRegistryActor, new PersistCreate (card), timeout)
-                                .thenApply(obj ->(CardCreateActionPerformet) obj);
-                            return onComplete(() -> cardCreated,
+                            CompletionStage<CardPersistActionPerformet> cardPersist = PatternsCS
+                                .ask(cardPersistanceActor, card, timeout)
+                                .thenApply(obj ->(CardPersistActionPerformet) obj);
+                            return onComplete(() -> cardPersist,
                                 performed -> {
-                                    //log.info("Created user [{}]: {}", user.getName(), performed.getDescription());
+                                    
                                     return complete(StatusCodes.CREATED, performed, Jackson.marshaller());
                                 });
                         }))

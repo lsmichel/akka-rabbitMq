@@ -25,14 +25,14 @@ public class SupervisorActor extends AbstractActor{
   public Receive createReceive() {
     return receiveBuilder()
       .match(ActorRef.class, actor -> {
-          System.out.println("========================================================> "+ actor.path().name());
+          System.out.println("===========> "+ actor.path().name());
           getContext().watch(actor);
       })
       .match(Terminated.class, t  -> {
-         System.out.println("=========================================================> ");
+         System.out.println("==============> ");
       })
       .matchAny(t -> {
-          System.out.println("=========================================================> ");
+          System.out.println("===========> ");
       })
       .build();
   }
