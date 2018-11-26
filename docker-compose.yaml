@@ -1,0 +1,17 @@
+version: '3'
+services:
+  web:
+    build: .
+    ports:
+     - "8080:8080"
+    links:
+      - rabbitmq
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      - RABBITMQ_DEFAULT_USER=root
+      - RABBITMQ_DEFAULT_PASS=root
+      - RABBITMQ_DEFAULT_VHOST=vhost
