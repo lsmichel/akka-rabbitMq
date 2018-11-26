@@ -440,8 +440,8 @@ public class CardregistryActor extends AbstractActor {
                         final String queueName = "clientID_" + card.getCardNocaisse();
                         AmqpCredentials amqpCredentials = AmqpCredentials.create("root", "root");
                         AmqpDetailsConnectionProvider connectionProvider
-                                = AmqpDetailsConnectionProvider.create("localhost", 5672)
-                                        .withHostAndPort("localhost", 5672)
+                                = AmqpDetailsConnectionProvider.create("rabbitmq", 5672)
+                                        .withHostAndPort("rabbitmq", 5672)
                                         .withVirtualHost("vhost")
                                         .withCredentials(amqpCredentials);
                         ByteString.fromArray(bytes);
@@ -518,8 +518,8 @@ public class CardregistryActor extends AbstractActor {
                             final String queueName = "clientID_"+cardsInfo.getCards().get(0).getCardNocaisse();
                             AmqpCredentials amqpCredentials = AmqpCredentials.create("root", "root");
                             AmqpDetailsConnectionProvider connectionProvider =
-                            AmqpDetailsConnectionProvider.create("localhost", 5672)
-                              .withHostAndPort("localhost", 5672)
+                            AmqpDetailsConnectionProvider.create("rabbitmq", 5672)
+                              .withHostAndPort("rabbitmq", 5672)
                               .withVirtualHost("vhost")
                               .withCredentials(amqpCredentials);
                             Sink<ByteString, CompletionStage<Done>>  amqpSink =
@@ -554,8 +554,8 @@ public class CardregistryActor extends AbstractActor {
              final String queueName = "clientID_"+pos;
              AmqpCredentials amqpCredentials = AmqpCredentials.create("root", "root");
              AmqpDetailsConnectionProvider connectionProvider =
-                     AmqpDetailsConnectionProvider.create("localhost", 5672)
-                             .withHostAndPort("localhost", 5672)
+                     AmqpDetailsConnectionProvider.create("rabbitmq", 5672)
+                             .withHostAndPort("rabbitmq", 5672)
                              .withVirtualHost("vhost")
                              .withCredentials(amqpCredentials);
             
