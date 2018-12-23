@@ -3,15 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.lsmichel.akkaamqprabbitmq;
+package com.lsmichel.akkaamqprabbitmq.message;
 
 import java.io.Serializable;
 
-/**
- *
- * @author lathsessakpamichel
- */
-import com.lsmichel.akkaamqprabbitmq.CardregistryActor.Card;
+
+import com.lsmichel.akkaamqprabbitmq.actors.CardregistryActor.Card;
 import java.util.List;
 import java.util.Map;
 public interface ICardMessages {
@@ -118,7 +115,14 @@ public interface ICardMessages {
         private final String numcard;
         private final Boolean hasError;
         private final String errorMessage;
-
+        
+        
+        public CardPersistActionPerformet(){
+            this.message = null;
+            this.numcard = null;
+            this.hasError = null;
+            this.errorMessage = null;
+        }
         public CardPersistActionPerformet( String message, String numcard, Boolean hasError, String errorMessage) {
             this.message = message;
             this.numcard = numcard;

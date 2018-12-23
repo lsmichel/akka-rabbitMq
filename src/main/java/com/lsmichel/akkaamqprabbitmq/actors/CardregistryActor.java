@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.lsmichel.akkaamqprabbitmq;
+package com.lsmichel.akkaamqprabbitmq.actors;
 
 import akka.Done;
 import akka.NotUsed;
@@ -24,8 +24,10 @@ import akka.stream.alpakka.amqp.javadsl.AmqpSink;
 import akka.stream.alpakka.amqp.javadsl.AmqpSource;
 import akka.stream.javadsl.*;
 import akka.util.ByteString;
-import com.lsmichel.akkaamqprabbitmq.ICardMessages.CardCreateActionPerformet;
-import com.lsmichel.akkaamqprabbitmq.ICardMessages.InfoCard;
+import com.lsmichel.akkaamqprabbitmq.message.ICardMessages;
+import com.lsmichel.akkaamqprabbitmq.message.ICardMessages.CardCreateActionPerformet;
+import com.lsmichel.akkaamqprabbitmq.message.ICardMessages.InfoCard;
+import com.lsmichel.akkaamqprabbitmq.helper.Utilities;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -54,7 +56,7 @@ public class CardregistryActor extends AbstractActor {
      private  Map<String , Integer> currentMapCount = new  HashMap<String , Integer> ();
      private  Map<String ,List<Map<String ,Object>>> curretcards = new HashMap<String ,List<Map<String ,Object>>>();
      private final ActorRef child = getContext().actorOf(Props.empty(), "target");
-    static Props props() {
+    public static Props props() {
     return Props.create(CardregistryActor.class);
   }
     @Override
@@ -65,8 +67,6 @@ public class CardregistryActor extends AbstractActor {
      
           ActorSystem system = ActorSystem.create();
           Materializer materializer = ActorMaterializer.create(system);
-          System.out.println("=========> "+ curretcards.keySet().size());
-          System.out.println("========> "+ curretcards.keySet().size());
          for (ActorRef each : getContext().getChildren()) {
              
               getContext().unwatch(each);
@@ -82,7 +82,6 @@ public class CardregistryActor extends AbstractActor {
      
     @Override
     public void postStop() {
-         System.out.println("========> "+ curretcards.keySet().size());
      }
     
     @Override
@@ -90,8 +89,6 @@ public class CardregistryActor extends AbstractActor {
            
             return receiveBuilder()   
             .match(ICardMessages.CardCreate.class, (ICardMessages.CardCreate cardInfo) -> {
-                
-                System.out.println("beginning =========================================");
                  ActorSystem system = ActorSystem.create();
                  Materializer materializer = ActorMaterializer.create(system);
                  ActorRef sender =  getSender();
@@ -158,10 +155,8 @@ public class CardregistryActor extends AbstractActor {
             }
             })
             .match(Terminated.class, t ->  {
-               System.out.println("========> "+ curretcards.keySet().size());
             })
             .matchAny(t -> {
-               System.out.println("========> "+ t.getClass().getName() + " " +  t.getClass().getCanonicalName()+ " " + t.getClass().getTypeName());
             })
             .build();
     }
@@ -202,6 +197,7 @@ public class CardregistryActor extends AbstractActor {
         private final String cardNocaisse ; 
         private final String cardUserBirthDate;
         private final String cardUserBrithPlace;
+        private final String cardUserNationality;
         
      public Card() {
         this.cardid = 1;
@@ -223,13 +219,15 @@ public class CardregistryActor extends AbstractActor {
         this.cardNocaisse = "";
         this.cardUserBirthDate="";
         this.cardUserBrithPlace="";
+        this.cardUserNationality="";
         }
 
         public Card(int cardid, String cardUserFname, String cardUserLname, String cardDateEtabishment, 
             String cardDateEpiration, String cardLocationEtabishment, String cardImatriculation, String cardNumber, 
             String cardUserSex, String cardUserPhoto, String cardUserAdress, String cardUserPofession, 
             String cardUserFatherName, String cardUserFatherBirthDate, String cardUserMatherBirthDate, 
-            String cardUserMatherName, String cardNocaisse , String cardUserBirthDate ,String cardUserBrithPlace ) {
+            String cardUserMatherName, String cardNocaisse , String cardUserBirthDate ,String cardUserBrithPlace ,
+            String cardUserNationality) {
             this.cardid = cardid;
             this.cardUserFname = cardUserFname;
             this.cardUserLname = cardUserLname;
@@ -249,6 +247,7 @@ public class CardregistryActor extends AbstractActor {
             this.cardNocaisse = cardNocaisse;
             this.cardUserBirthDate= cardUserBirthDate;
             this.cardUserBrithPlace=cardUserBrithPlace;
+            this.cardUserNationality=cardUserNationality;
         }
 
        
@@ -328,6 +327,11 @@ public class CardregistryActor extends AbstractActor {
         public String getCardUserBrithPlace() {
             return cardUserBrithPlace;
         }
+
+        public String getCardUserNationality() {
+            return cardUserNationality;
+        }
+        
         
      }
     
@@ -361,76 +365,16 @@ public class CardregistryActor extends AbstractActor {
             curretcards.get("clientID_"+pos).add(card);
         }
     }
-    private Map<String, Object> generateCardMap(Card card) {
-        if (card!=null && card.getCardNocaisse() != null && ! card.getCardNocaisse().isEmpty()) {
-            Map<String, Object> icardIn = new HashMap<>();
-            if (card.getCardUserFname() != null && !card.getCardUserFname().isEmpty()) {
-                icardIn.put("cardUserFname", card.getCardUserFname());
-            }
-            if (card.getCardUserLname() != null && !card.getCardUserLname().isEmpty()) {
-                icardIn.put("cardUserLname", card.getCardUserLname());
-            }
-            if (card.getCardDateEtabishment() != null && !card.getCardDateEtabishment().isEmpty()) {
-                icardIn.put("cardDateEtabishment", card.getCardDateEtabishment());
-            }
-            if (card.getCardDateEpiration() != null && !card.getCardDateEpiration().isEmpty()) {
-                icardIn.put("cardDateEpiration", card.getCardDateEpiration());
-            }
-            if (card.getCardLocationEtabishment() != null && !card.getCardLocationEtabishment().isEmpty()) {
-                icardIn.put("cardLocationEtabishment", card.getCardLocationEtabishment());
-            }
-            if (card.getCardImatriculation() != null && !card.getCardImatriculation().isEmpty()) {
-                icardIn.put("cardImatriculation", card.getCardImatriculation());
-            }
-            if (card.getCardNumber() != null && !card.getCardNumber().isEmpty()) {
-                icardIn.put("cardNumber", card.getCardNumber());
-            }
-            if (card.getCardUserSex() != null && !card.getCardUserSex().isEmpty()) {
-                icardIn.put("cardUserSex", card.getCardUserSex());
-            }
-            if (card.getCardUserPhoto() != null && !card.getCardUserPhoto().isEmpty()) {
-                icardIn.put("cardUserPhoto", card.getCardUserPhoto());
-            }
-            if (card.getCardUserAdress() != null && !card.getCardUserAdress().isEmpty()) {
-                icardIn.put("cardUserAdress", card.getCardUserAdress());
-            }
-            if (card.getCardUserPofession() != null && !card.getCardUserPofession().isEmpty()) {
-                icardIn.put("cardUserPofession", card.getCardUserPofession());
-            }
-            if (card.getCardUserFatherName() != null && !card.getCardUserFatherName().isEmpty()) {
-                icardIn.put("cardUserFatherName", card.getCardUserFatherName());
-            }
-            if (card.getCardUserFatherBirthDate() != null && !card.getCardUserFatherBirthDate().isEmpty()) {
-                icardIn.put("cardUserFatherBirthDate", card.getCardUserFatherBirthDate());
-            }
-            if (card.getCardUserMatherBirthDate() != null && !card.getCardUserMatherBirthDate().isEmpty()) {
-                icardIn.put("cardUserMatherBirthDate", card.getCardUserMatherBirthDate());
-            }
-            if (card.getCardUserMatherName() != null && !card.getCardUserMatherName().isEmpty()) {
-                icardIn.put("cardUserMatherName", card.getCardUserMatherName());
-            }
-            if (card.getCardUserBirthDate() != null && !card.getCardUserBirthDate().isEmpty()) {
-                icardIn.put("cardUserBirthDate", card.getCardUserBirthDate());
-            }
-            if (card.getCardUserBrithPlace() != null && !card.getCardUserBrithPlace().isEmpty()) {
-                icardIn.put("cardUserBrithPlace", card.getCardUserBrithPlace());
-            }
-            if (card.getCardNocaisse() != null && !card.getCardNocaisse().isEmpty()) {
-                icardIn.put("cardNocaisse", card.getCardNocaisse());
-            }
-            return icardIn;
-        }
-        return null;
-    }
+    
     private boolean pushCardData(Materializer materializer, ICardMessages.CardCreate cardInfo) throws IOException {
         if (cardInfo != null) {
             Card card = cardInfo.getCard();
-            Map<String, Object> icardIn = generateCardMap(card);
+            Map<String, Object> icardIn = Utilities.generateCardMap(card);
             
             if (icardIn != null && !icardIn.keySet().isEmpty()) {
                 ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
                 ObjectOutputStream out = null;
-                byte[] bytes = MapToByteArray(icardIn);
+                byte[] bytes = Utilities.MapToByteArray(icardIn);
                 
                 if (bytes != null) {
                     List<byte[]> input = Arrays.asList(bytes);
@@ -471,46 +415,23 @@ public class CardregistryActor extends AbstractActor {
 
         return false;
     }
-    private byte[] MapToByteArray(Map<String, Object> map) throws IOException {
-        ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
-        ObjectOutputStream out = null;
-        byte[] bytes = null;
-        try {
-            out = new ObjectOutputStream(byteOut);
-            out.writeObject(map);
-            out.flush();
-            bytes = byteOut.toByteArray();
-            return bytes;
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return null;
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            if (byteOut != null) {
-                byteOut.close();
-            }
-        }
-    }
      private boolean pushCardData(Materializer materializer , ICardMessages.CardsPush cardsInfo) throws IOException {
            if(  cardsInfo!= null 
                    && cardsInfo.getCards() !=null 
                    && ! cardsInfo.getCards().isEmpty()){
                    List<byte[]> input = new ArrayList<byte[]>();
                    cardsInfo.getCards().forEach(card -> {
-                        Map<String, Object> icardIn = generateCardMap(card);
+                        Map<String, Object> icardIn = Utilities.generateCardMap(card);
                         if(icardIn!=null){
                             byte[] bytes = null;
                             try {
-                                bytes = MapToByteArray(icardIn);
+                                bytes = Utilities.MapToByteArray(icardIn);
                             } catch (IOException ex) {
                                 Logger.getLogger(CardregistryActor.class.getName()).log(Level.SEVERE, null, ex);
                             }
                             input.add(bytes);
                         }
                     });
-                      System.out.println("beginning =========================================");
                      if(!input.isEmpty()){
                       
                           try {

@@ -35,7 +35,12 @@
           <groupId>com.lightbend.akka</groupId>
           <artifactId>akka-stream-alpakka-slick_2.12</artifactId>
           <version>1.0-M1</version>
-        </dependency>   
+        </dependency>  
+          <dependency>
+          <groupId>mysql</groupId>
+          <artifactId>mysql-connector-java</artifactId>
+          <version>5.1.47</version>
+        </dependency> 
     </dependencies>
     <build>
         <plugins>

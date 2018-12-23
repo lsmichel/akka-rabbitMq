@@ -5,6 +5,10 @@
  */
 package com.lsmichel.akkaamqprabbitmq;
 
+import com.lsmichel.akkaamqprabbitmq.actors.SupervisorActor;
+import com.lsmichel.akkaamqprabbitmq.actors.PersistanceActor;
+import com.lsmichel.akkaamqprabbitmq.actors.CardregistryActor;
+import com.lsmichel.akkaamqprabbitmq.routes.CardRoutes;
 import akka.NotUsed;
 import akka.actor.ActorRef;
 import static akka.actor.ActorRef.noSender;

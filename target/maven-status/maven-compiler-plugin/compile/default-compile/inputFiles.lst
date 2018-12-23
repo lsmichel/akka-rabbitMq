@@ -1,0 +1,8 @@
+/Users/lathsessakpamichel/NetBeansProjects/akkaAmqpRabbitMq/src/main/java/com/lsmichel/akkaamqprabbitmq/CardManagerRunner.java
+/Users/lathsessakpamichel/NetBeansProjects/akkaAmqpRabbitMq/src/main/java/com/lsmichel/akkaamqprabbitmq/RunService.java
+/Users/lathsessakpamichel/NetBeansProjects/akkaAmqpRabbitMq/src/main/java/com/lsmichel/akkaamqprabbitmq/message/ICardMessages.java
+/Users/lathsessakpamichel/NetBeansProjects/akkaAmqpRabbitMq/src/main/java/com/lsmichel/akkaamqprabbitmq/actors/SupervisorActor.java
+/Users/lathsessakpamichel/NetBeansProjects/akkaAmqpRabbitMq/src/main/java/com/lsmichel/akkaamqprabbitmq/actors/CardregistryActor.java
+/Users/lathsessakpamichel/NetBeansProjects/akkaAmqpRabbitMq/src/main/java/com/lsmichel/akkaamqprabbitmq/actors/PersistanceActor.java
+/Users/lathsessakpamichel/NetBeansProjects/akkaAmqpRabbitMq/src/main/java/com/lsmichel/akkaamqprabbitmq/routes/CardRoutes.java
+/Users/lathsessakpamichel/NetBeansProjects/akkaAmqpRabbitMq/src/main/java/com/lsmichel/akkaamqprabbitmq/helper/Utilities.java

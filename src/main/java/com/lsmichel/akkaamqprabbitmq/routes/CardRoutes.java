@@ -1,4 +1,4 @@
-package com.lsmichel.akkaamqprabbitmq;
+package com.lsmichel.akkaamqprabbitmq.routes;
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -24,14 +24,14 @@ import java.util.concurrent.TimeUnit;
 
 import akka.http.javadsl.server.AllDirectives;
 import akka.http.scaladsl.model.HttpResponse;
-import com.lsmichel.akkaamqprabbitmq.ICardMessages.CardCreateActionPerformet;
-import com.lsmichel.akkaamqprabbitmq.CardregistryActor.Card;
-import com.lsmichel.akkaamqprabbitmq.ICardMessages.CardCreate;
-import com.lsmichel.akkaamqprabbitmq.CardregistryActor.PosCard;
-import com.lsmichel.akkaamqprabbitmq.ICardMessages.CardPersistActionPerformet;
-import com.lsmichel.akkaamqprabbitmq.ICardMessages.CardsPush;
-import com.lsmichel.akkaamqprabbitmq.ICardMessages.InfoCard;
-import com.lsmichel.akkaamqprabbitmq.ICardMessages.PersistCreate;
+import com.lsmichel.akkaamqprabbitmq.message.ICardMessages.CardCreateActionPerformet;
+import com.lsmichel.akkaamqprabbitmq.actors.CardregistryActor.Card;
+import com.lsmichel.akkaamqprabbitmq.message.ICardMessages.CardCreate;
+import com.lsmichel.akkaamqprabbitmq.actors.CardregistryActor.PosCard;
+import com.lsmichel.akkaamqprabbitmq.message.ICardMessages.CardPersistActionPerformet;
+import com.lsmichel.akkaamqprabbitmq.message.ICardMessages.CardsPush;
+import com.lsmichel.akkaamqprabbitmq.message.ICardMessages.InfoCard;
+import com.lsmichel.akkaamqprabbitmq.message.ICardMessages.PersistCreate;
 
 
 /**
@@ -185,16 +185,17 @@ public class CardRoutes extends AllDirectives{
                                 .ask(cardPersistanceActor, card, timeout)
                                 .thenApply(obj ->(CardPersistActionPerformet) obj);
                             return onComplete(() -> cardPersist,
-                                performed -> {
-                                    
-                                    return complete(StatusCodes.CREATED, performed, Jackson.marshaller());
+                                infoOrException -> {
+                                    if(infoOrException.isSuccess()){
+                                        return complete(StatusCodes.CREATED, infoOrException.get(), Jackson.marshaller());
+                                    }
+                                    else{
+                                        CardPersistActionPerformet cardPersistActionPerformet = new CardPersistActionPerformet("error", "XXXXXXXXXXXXXXXX", true, "" );
+                                        return complete(StatusCodes.CREATED, cardPersistActionPerformet, Jackson.marshaller());
+                                    }
                                 });
                         }))
             )
         );
-    }
-
-    private Object HttpResponse(StatusCode OK) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

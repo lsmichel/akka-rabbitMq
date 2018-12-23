@@ -19,10 +19,6 @@ public class RunService {
      */
     public static void main(String[] args) {
         String  ip= null;
-        /*System.out.println("Veillez entrer l'adresse du serveur  :");
-        Scanner sc = new Scanner(System.in);
-        String  ip = sc.next();
-        System.out.println(ip);*/
        try{
            DatagramSocket socket = new DatagramSocket();
            socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
